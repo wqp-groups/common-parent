@@ -10,6 +10,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 
 /**
  * 客户端通道数据处理抽象类
+ * 注：客户端需要继承该抽象类进行接收消息
  */
 public abstract class AbstractChannelHandlerClient extends AbstractChannelHandler {
     private NettyConf nettyConf;
