@@ -19,6 +19,10 @@ public abstract class AbstractChannelHandlerClient extends AbstractChannelHandle
         return nettyConf;
     }
 
+    /**
+     * 在launcher方法中调用此方法注入NettyConf
+     * @param nettyConf
+     */
     protected void setNettyConf(NettyConf nettyConf) {
         this.nettyConf = nettyConf;
     }

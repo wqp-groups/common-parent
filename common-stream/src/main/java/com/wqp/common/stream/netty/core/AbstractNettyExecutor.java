@@ -18,6 +18,10 @@ public abstract class AbstractNettyExecutor implements NettyExecutor {
         return nettyConf;
     }
 
+    /**
+     * 在netty客户端创建时注入NettyConf
+     * @param nettyConf
+     */
     public void setNettyConf(NettyConf nettyConf) {
         this.nettyConf = nettyConf;
     }
