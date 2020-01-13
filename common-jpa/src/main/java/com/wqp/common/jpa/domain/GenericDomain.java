@@ -6,12 +6,12 @@ import com.wqp.common.util.common.IdSnowflake;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 
 @MappedSuperclass
-public class GenericDomain<ID extends Serializable>{
+public abstract class GenericDomain<ID> {
+
     @Id
     @Column(name = "id", nullable = false, length = 50, updatable = false)
     protected ID id;
@@ -28,13 +28,10 @@ public class GenericDomain<ID extends Serializable>{
     @Column(name = "modify_at", columnDefinition = "datetime(0) comment '修改时间'")
     protected Timestamp modifyAt;
 
-    public GenericDomain() {
-    }
-
     public void fillId() {
         Field field;
         try {
-            field = this.getClass().getDeclaredField("id");
+            field = this.getClass().getSuperclass().getDeclaredField("id");
             if (field.getType() == Long.class) {
                 this.setId((ID) IdSnowflake.getLocalInstance().nextId(this.getClass()));
             } else {
@@ -43,7 +40,6 @@ public class GenericDomain<ID extends Serializable>{
         } catch (NoSuchFieldException var3) {
             this.setId((ID) IDGenerator.uuid());
         }
-
     }
 
     public ID getId() {

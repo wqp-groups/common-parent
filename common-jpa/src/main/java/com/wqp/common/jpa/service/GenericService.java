@@ -29,7 +29,7 @@ public class GenericService<T extends GenericDomain<ID>, ID extends Serializable
 
     @Transactional
     public T add(T t){
-        t.fillId();
+        if(t != null && t.getId() == null) t.fillId();
         return this.repository.save(t);
     }
 
