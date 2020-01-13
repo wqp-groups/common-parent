@@ -1,20 +1,17 @@
 package com.wqp.common.jpa.domain;
 
-import com.wqp.common.util.common.IDGenerator;
-import com.wqp.common.util.common.IdSnowflake;
-
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import java.lang.reflect.Field;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @MappedSuperclass
-public abstract class GenericDomain<ID> {
+public abstract class GenericDomain<ID extends Serializable> {
 
     @Id
     @Column(name = "id", nullable = false, length = 50, updatable = false)
-    protected ID id;
+    protected Long id;
     @Column(name = "create_uid", nullable = false, updatable = false, length = 50, columnDefinition = "varchar(50) comment '创建者ID'")
     protected String createUid;
     @Column(name = "create_uname", nullable = false, updatable = false, length = 50, columnDefinition = "varchar(50) comment '创建者名称'")
@@ -28,25 +25,12 @@ public abstract class GenericDomain<ID> {
     @Column(name = "modify_at", columnDefinition = "datetime(0) comment '修改时间'")
     protected Timestamp modifyAt;
 
-    public void fillId() {
-        Field field;
-        try {
-            field = this.getClass().getSuperclass().getDeclaredField("id");
-            if (field.getType() == Long.class) {
-                this.setId((ID) IdSnowflake.getLocalInstance().nextId(this.getClass()));
-            } else {
-                this.setId((ID) IDGenerator.uuid());
-            }
-        } catch (NoSuchFieldException var3) {
-            this.setId((ID) IDGenerator.uuid());
-        }
-    }
 
-    public ID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(ID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

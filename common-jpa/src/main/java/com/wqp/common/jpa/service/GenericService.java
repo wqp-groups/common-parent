@@ -4,6 +4,8 @@ import com.wqp.common.jpa.common.PageSearchRequest;
 import com.wqp.common.jpa.common.SortCondition;
 import com.wqp.common.jpa.domain.GenericDomain;
 import com.wqp.common.jpa.repository.GenericRepository;
+import com.wqp.common.util.common.IDGenerator;
+import com.wqp.common.util.common.IdSnowflake;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
@@ -26,10 +29,9 @@ public class GenericService<T extends GenericDomain<ID>, ID extends Serializable
     @Autowired
     protected R repository;
 
-
     @Transactional
     public T add(T t){
-        if(t != null && t.getId() == null) t.fillId();
+        fillID(t);
         return this.repository.save(t);
     }
 
@@ -123,5 +125,29 @@ public class GenericService<T extends GenericDomain<ID>, ID extends Serializable
      * @return
      */
     public Sort getSort(){ return null;}
+
+
+    /**
+     * 填充ID
+     * @param t
+     */
+    public void fillID(T t) {
+        Field field;
+        try {
+            field = t.getClass().getSuperclass().getDeclaredField("id");
+            if(field == null) return;
+
+            field.setAccessible(true);
+            if (field.getType() == Long.class) {
+                field.set(t, IdSnowflake.getLocalInstance().nextId(this.getClass()));
+            } else if (field.getType() == String.class) {
+                field.set(t, IDGenerator.uuid());
+            }
+        } catch (NoSuchFieldException var3) {
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
